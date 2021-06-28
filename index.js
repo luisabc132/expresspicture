@@ -3,10 +3,20 @@ const { json, urlencoded } = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
-const pins = require('./src/pins/pins.routes');
-const boards = require('./src/boards/boards.routes');
-const users = require('./src/users/users.routes');
-
+require('dotenv').config()
+const pins = require('./src/pins/pins.router');
+const boards = require('./src/boards/boards.router');
+const users = require('./src/users/users.router');
+const auth = require('./src/auth/auth.router')
+const mongoose = require("mongoose");
+const options = { useNewUrlParser: true, useUnifiedTopology: true };
+const mongo = mongoose.connect(
+  process.env.DB_HOST,
+  options
+);
+mongo.then(() =>{
+  console.log("mongo listo");
+});
 
 global.appRoot = path.resolve(__dirname);
 
@@ -20,6 +30,7 @@ app.disable("x-powered-by");
 app.use('/pins', pins);
 app.use('/boards', boards);
 app.use('/users', users);
+app.use("/auth", auth);
 
 /* app.patch("/editPin/:id", (request, response)=> {
   const pin = db.update(request.params.id)
